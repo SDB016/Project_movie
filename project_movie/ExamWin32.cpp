@@ -42,10 +42,17 @@ int main()
     int width = 1200, height = 800;
     ChangeWorkSize(width, height); // 작업 영역을 설정한다.
 
-    Clear(0, RGB(62, 77, 104));
+    Clear(0, RGB(72, 87, 114));
 
     AppData data = { NULL };  // 프로그램이 내부적으로 사용할 메모리를 선언한다.
     SetAppData(&data, sizeof(data));  // 지정한 변수를 내부 데이터로 저장한다.
+
+    void* p = CreateListBox(10, 120, 300, 150, 1004);
+    ListBox_AddString(p, "hi", 0);
+    ListBox_AddString(p, "hi", 0);
+    ListBox_AddString(p, "hi", 0);
+    ListBox_AddString(p, "hi", 0);
+    ListBox_AddString(p, "hi", 0);
 
    // 프로그램에서 사용할 버튼을 생성합니다.
     CreateButton("메모장 찾기", 10, 10, 105, 28, 1000);
