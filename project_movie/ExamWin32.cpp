@@ -3,38 +3,47 @@
 #include "tipsware.h"
 
 #define IDC_STR_EDIT 1005
+#define IDC_OPEN_FILE_BTN 1000
+#define IDC_SAVE_FILE_BTN 1001
 
 struct AppData  // 프로그램에서 사용할 내부 데이터
 {
     TargetData* p_target;  // 매크로 대상의 정보
 };
 
+
+void OpenTextFile()   // 사용자가 선택한 파일을 열어서 에디트 컨트롤에 보여주는 함수
+{
+    char path[MAX_PATH];  // 사용자가 선택한 텍스트 파일의 경로를 저장할 변수
+    if (ChooseOpenFileName(path, MAX_PATH)) {  // 파일 열기 대화 상자를 출력해서 파일을 선택하게 한다.
+        // 선택한 파일을 읽어서 에디트 컨트롤에 표시한다.
+        Edit_ReadTextFromFile(FindControl(IDC_STR_EDIT), path);
+    }
+}
+
+void SaveTextFile()  // 에디트 컨트롤에 적힌 문자열을 사용자가 선택한 파일에 저장한다.
+{
+    char path[MAX_PATH]; // 사용자가 선택한 텍스트 파일의 경로를 저장할 변수
+    if (ChooseSaveFileName(path, MAX_PATH)) { // 저장할 파일의 이름을 사용자가 선택하게 한다.
+        // 에디트 컨트롤에 적힌 문자열을 텍스트 파일에 저장한다.
+        Edit_SaveTextToFile(FindControl(IDC_STR_EDIT), path);
+    }
+}
+
+
 // 컨트롤을 조작했을 때 호출할 함수 만들기
 // 컨트롤의 아이디(a_ctrl_id), 컨트롤의 조작 상태(a_notify_code), 선택한 컨트롤 객체(ap_ctrl)
 void OnCommand(INT32 a_ctrl_id, INT32 a_notify_code, void* ap_ctrl)
 {
+    
     AppData* p_data = (AppData*)GetAppData();  // 응용 프로그램의 내부 데이터 주소를 가져온다.
 
-    if (a_ctrl_id == 1000) {
-        // 메모장 프로그램의 'Window Class' 명칭이 'notepad' 입니다. 따라서
-        // 'notepad' 이름으로 대상을 검색합니다. 대상을 찾았다면 NULL 아닌 값이 저장됩니다.
-        p_data->p_target = FindTargetImage(0, "notepad", NULL);
-    }
-    else if (a_ctrl_id == 1001) {
-        if (p_data->p_target != NULL) {
-            char str[64];  // 에디트 컨트롤에 입력된 문자열을 저장할 배열 변수
-            int x, y;
-            // 메모장의 클라이언트 영역에서 (10, 10) 지점을 화면 좌표로 변환합니다.
-            GetMousePosFromTarget(p_data->p_target, &x, &y, 10, 10);
-            // 메모장에 글을 쓰기 위해서 (x, y)에 마우스를 클릭해서 메모장을 선택합니다.
-            MouseClickWrite(x, y);
-            // 에디트 컨트롤에 저장된 문자열을 str 배열에 복사한다.
-            GetCtrlName(FindControl(1010), str, 64);
-            // 한글 모드라고 가정하고 str 배열에 저장된 문자열을 메모장에 씁니다.
-            InputNormalString(str, 1);
-        }
-    }
-    else if (a_ctrl_id == 1002) {
+    if (a_ctrl_id == IDC_OPEN_FILE_BTN) OpenTextFile();   // [파일 열기] 버튼을 선택한 경우
+    else if (a_ctrl_id == IDC_SAVE_FILE_BTN) SaveTextFile();   // [파일 저장] 버튼을 선택한 경우
+
+
+
+    if (a_ctrl_id == 1002) {
         void* p_list_box = FindControl(1003);
         ListBox_ResetContent(p_list_box);
 
@@ -67,7 +76,6 @@ void DrawDrinkItem(int index, char* ap_str, int a_str_len, void* ap_data, int a_
 
 
 
-
 // 컨트롤을 조작할 때 호출할 함수를 설정한다.
 CMD_MESSAGE(OnCommand)
 
@@ -81,12 +89,12 @@ int main()
     AppData data = { NULL };  // 프로그램이 내부적으로 사용할 메모리를 선언한다.
     SetAppData(&data, sizeof(data));  // 지정한 변수를 내부 데이터로 저장한다.
 
-   // 프로그램에서 사용할 버튼을 생성합니다.
-    CreateButton("메모장 찾기", 10, 10, 105, 28, 1000);
-    CreateButton("메모장에 글쓰기", 120, 10, 105, 28, 1001);
-    CreateListBox(10, 100, 500, 250, 1003);
+    CreateEdit(10, 10, 500, 30, 1006,NULL);
+    CreateButton("검색", 520, 10,50,28,1007 );
+
+    CreateListBox(10, 50, 500, 250, 1003);
     void *p = CreateListBox(530, 100, 600, 600, 1004,DrawDrinkItem);
-    CreateEdit(10, 420, 500, 350, IDC_STR_EDIT,
+    CreateEdit(10, 370, 500, 350, IDC_STR_EDIT,
         ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL);
 
     FILE* p_file = NULL;
@@ -104,9 +112,12 @@ int main()
     SelectFontObject("굴림", 12); // 글꼴을 '굴림', 12 크기로 변경한다.
     
 
-    CreateButton("메모장 윈도우 찾기", 10, 370, 160, 28, 1002);
-    // 메모장에 쓸 문자열을 입력할 에디트 컨트롤을 생성한다.
-    CreateEdit(10, 50, 500, 42, 1000, 0);
+    CreateButton("메모장 윈도우 찾기", 10, 320, 160, 28, 1002);
+    // 파일 열기, 저장 버튼을 생성한다.
+    CreateButton("파일 열기", 5, 730, 110, 28, IDC_OPEN_FILE_BTN);
+    CreateButton("파일 저장", 118, 730, 110, 28, IDC_SAVE_FILE_BTN);
+
+
     ShowDisplay(); // 정보를 윈도우에 출력한다.
     return 0;
 }
