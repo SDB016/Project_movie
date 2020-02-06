@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "tipsware.h"
 
+#define IDC_STR_EDIT 1005
+
 struct AppData  // 프로그램에서 사용할 내부 데이터
 {
     TargetData* p_target;  // 매크로 대상의 정보
@@ -82,8 +84,11 @@ int main()
    // 프로그램에서 사용할 버튼을 생성합니다.
     CreateButton("메모장 찾기", 10, 10, 105, 28, 1000);
     CreateButton("메모장에 글쓰기", 120, 10, 105, 28, 1001);
-    CreateListBox(10, 100, 500, 150, 1003);
+    CreateListBox(10, 100, 500, 250, 1003);
     void *p = CreateListBox(530, 100, 600, 600, 1004,DrawDrinkItem);
+    CreateEdit(10, 420, 500, 350, IDC_STR_EDIT,
+        ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL);
+
     FILE* p_file = NULL;
     char drink_name[64];
     // drink.txt 파일을 텍스트 읽기 모드로 연다.
@@ -99,7 +104,7 @@ int main()
     SelectFontObject("굴림", 12); // 글꼴을 '굴림', 12 크기로 변경한다.
     
 
-    CreateButton("메모장 윈도우 찾기", 10, 270, 160, 28, 1002);
+    CreateButton("메모장 윈도우 찾기", 10, 370, 160, 28, 1002);
     // 메모장에 쓸 문자열을 입력할 에디트 컨트롤을 생성한다.
     CreateEdit(10, 50, 500, 42, 1000, 0);
     ShowDisplay(); // 정보를 윈도우에 출력한다.
