@@ -92,6 +92,17 @@ int main()
     CreateEdit(10, 10, 500, 30, 1006,NULL);
     CreateButton("검색", 520, 10,50,28,1007 );
 
+
+    CreateButton("1", 550, 60, 30, 28, 1010);
+
+    CreateButton("2", 600, 60, 30, 28, 1011);
+
+    CreateButton("3", 650, 60, 30, 28, 1012);
+
+    CreateButton("4", 700, 60, 30, 28, 1013);
+
+    CreateButton("5", 750, 60, 30, 28, 1014);
+
     CreateListBox(10, 50, 500, 250, 1003);
     void *p = CreateListBox(530, 100, 600, 600, 1004,DrawDrinkItem);
     CreateEdit(10, 370, 500, 350, IDC_STR_EDIT,
