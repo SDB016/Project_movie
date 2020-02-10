@@ -93,7 +93,7 @@ int main()
     CreateButton("검색", 520, 10,50,28,1007 );
 
 
-    CreateButton("1", 550, 60, 30, 28, 1010);
+    CreateButton("1",   550, 60, 30, 28, 1010);
 
     CreateButton("2", 600, 60, 30, 28, 1011);
 
