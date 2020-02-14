@@ -25,7 +25,7 @@ DWORD ReadHtmlText(HINTERNET ah_http_file, char *ap_html_string)
 			// 네트워크 지연으로 더 작은 크기가 전송될수 있음. (10번 정도 재시도함)
 			error_count++;
 			if (error_count > 10) break;
-			else WaitForSingleObject(h_wait_event, 50); // 50ms 지연하도록 구성한다.
+			else WaitForSingleObject(h_wait_event, 5); // 50ms 지연하도록 구성한다.
 		} else error_count = 0;
 	}
 
@@ -46,6 +46,7 @@ void LoadDataFromWebPage()  // 웹 페이지를 구성하는 HTML 소스를 가�
 	HINTERNET h_connect = InternetConnect(h_session, "movie.naver.com", INTERNET_INVALID_PORT_NUMBER, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
 	// 네이버 영화에서 원하는 웹 페이지에 접속한다. (url 배열에 저장된 페이지를 연다.)
 	HINTERNET h_http_file = HttpOpenRequest(h_connect, "GET", url, HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
+	
 
 	char *p_utf8_html_str = (char *)malloc(2*1024*1024);  // 2M Bytes 메모리 할당!
 	if (p_utf8_html_str != NULL) {  // 메모리 할당에 성공했다면!
