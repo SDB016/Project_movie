@@ -60,9 +60,9 @@ void LoadDataFromWebPage()  // 웹 페이지를 구성하는 HTML 소스를 가�
 	// 인터넷을 사용할 세션을 구성한다.
 	HINTERNET h_session = InternetOpen("NaverWeatherScanner", PRE_CONFIG_INTERNET_ACCESS, NULL, INTERNET_INVALID_PORT_NUMBER, 0);
 	// 어떤 사이트에 접속할지 구성한다. (네이버 날씨를 사용하도록 구성한다.)
-	HINTERNET h_connect = InternetConnect(h_session, "weather.naver.com", INTERNET_INVALID_PORT_NUMBER, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+	HINTERNET h_connect = InternetConnect(h_session, "search.naver.com", INTERNET_INVALID_PORT_NUMBER, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
 	// 네이버 날씨 페이지에서 서울 지역(CT001013)과 관련된 정보를 얻는다.
-	HINTERNET h_http_file = HttpOpenRequest(h_connect, "GET", "rgn/cityWetrCity.nhn?cityRgnCd=CT001013", HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
+	HINTERNET h_http_file = HttpOpenRequest(h_connect, "GET", "search.naver?sm=top_hty&fbm=1&ie=utf8&query=%EA%B4%B4%EB%AC%BC", HTTP_VERSION, NULL, 0, INTERNET_FLAG_DONT_CACHE, 0);
 
 	char *p_utf8_html_str = (char *)malloc(1024*1024);  // 1M Bytes 메모리 할당!
 	if (p_utf8_html_str != NULL) {  // 메모리 할당에 성공했다면!
@@ -129,22 +129,23 @@ void ShowWeatherInSeoul()  // HTML 정보를 사용해서 서울 날씨 정보 �
 	if (p_html_str != NULL) {
 		GetCtrlName(p_edit, p_html_str, len);  // 에디트 컨트롤에 저장된 문자열을 p_html_str에 복사한다.
 
-		char *p_pos = strstr(p_html_str, "<h4 class=\"first\">");  // 시작 위치를 찾는다!
+		char *p_pos = strstr(p_html_str, "class=\"sh_movie_link\" target=\"_blank\">");  // 시작 위치를 찾는다!
 		if (p_pos != NULL) {
 			p_pos += 18;   // +18은 <h4 class="first"> 문자열 Skip!!
 
-			p_pos = CopyTextFromWebData(time_str, p_pos, "<h5>", "</h5>");  // 시간 복사!
-			p_pos = CopyTextFromWebData(temperature, p_pos, "<em>", "</span>");  // 온도 복사!
+			p_pos = CopyTextFromWebData(time_str, p_pos, "<strong>", "</strong>");  // 영화 제목 복사!
+			p_pos = CopyTextFromWebData(temperature, p_pos, "<em>", "</em>");  // 평점 복사!
 
-			p_pos = CopyTextFromWebData(state, p_pos, "<strong>", "</strong>");   // 오늘 날씨 상태 복사!
-			p_pos = CopyTextFromWebData(state_ex, p_pos, "</em>", "<br><a href"); // 추가 날씨 상태 복사!
+			p_pos = CopyTextFromWebData(state, p_pos, "<span >", "</span>");   // 개요 복사!
+			p_pos = CopyTextFromWebData(state_ex, p_pos, "<dt class=\"director\">", "</a>"); // 추가 날씨 상태 복사!
 
-			SelectFontObject("굴림", 36, 1);
-			TextOut(32, 250, RGB(200, 255, 255), temperature);  // 온도 출력!
+			SelectFontObject("굴림", 24, 1);
+			TextOut(10, 220, RGB(242, 242, 242), "%s %s",time_str, temperature);  // 온도 출력!
+			TextOut(10, 250, RGB(255, 255, 200), state); // 날씨 출력!
+			
 
-			SelectFontObject("굴림", 16, 1);
-			TextOut(10, 220, RGB(232, 232, 232), time_str);  // 시간 출력!
-			TextOut(10, 290, RGB(255, 255, 200), "%s, %s", state, state_ex); // 날씨 출력!
+			SelectFontObject("굴림", 12, 1);
+			TextOut(10, 290, RGB(232, 232, 232), state_ex);  // 시간 출력!
 		}
 
 		free(p_html_str);  // 에디트 컨트롤에 저장된 문자열을 복사하기 위해 할당했던 메모리 해제!
