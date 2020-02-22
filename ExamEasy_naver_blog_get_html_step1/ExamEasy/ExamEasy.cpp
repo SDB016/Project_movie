@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "tipsware.h"
 #include<string.h>
+#include <atlstr.h>
 
 // HTTP 프로토콜을 사용하는 함수들이 정의된 wininet.h 헤더 파일을 추가한다.
 #include <wininet.h>  
@@ -149,7 +150,7 @@ void ShowMovieData()  // HTML 정보를 사용해서 영화 정보 구성하기!
 	if (p_html_str != NULL) {
 		GetCtrlName(p_edit, p_html_str, len);  // 에디트 컨트롤에 저장된 문자열을 p_html_str에 복사한다.
 
-		char* p_pos = strstr(p_html_str, "class=\"sh_movie_link\" target=\"_blank\">");  // 시작 위치를 찾는다!
+		char* p_pos = strstr(p_html_str, "네이버가 운영하는 영화 서비스입니다.");  // 시작 위치를 찾는다!
 		if (p_pos != NULL) {
 			p_pos += 39;  
 
@@ -192,6 +193,57 @@ void SaveTextFile()  // 에디트 컨트롤에 적힌 문자열을 사용자가 
 }
 
 
+void AsciiToUTF8(CString parm_ascii_string, CString& parm_utf8_string)
+{
+	parm_utf8_string.Empty();
+
+	// 아스키 코드를 UTF8형식의 코드로 변환해야 한다. 아스키 코드를 UTF8 코드로 변환할때는
+	// 아스키 코드를 유니코드로 먼저 변환하고 변환된 유니코드를 UTF8 코드로 변환해야 한다.
+
+	// 아스키 코드로된 문자열을 유니코드화 시켰을 때의 길이를 구한다.
+	int temp_length = MultiByteToWideChar(CP_ACP, 0, (char*)(const char*)parm_ascii_string, -1, NULL, 0);
+	// 변환된 유니코드를 저장할 공간을 할당한다.
+	BSTR unicode_str = SysAllocStringLen(NULL, temp_length + 1);
+
+	// 아스키 코드로된 문자열을 유니 코드 형식의 문자열로 변경한다.
+	MultiByteToWideChar(CP_ACP, 0, (char*)(const char*)parm_ascii_string, -1, unicode_str, temp_length);
+
+	// 유니코드 형식의 문자열을 UTF8 형식으로 변경했을때 필요한 메모리 공간의 크기를 얻는다.
+	temp_length = WideCharToMultiByte(CP_UTF8, 0, unicode_str, -1, NULL, 0, NULL, NULL);
+
+	if (temp_length > 0) {
+		CString str;
+		// UTF8 코드를 저장할 메모리 공간을 할당한다.
+		char* p_utf8_string = new char[temp_length];
+		memset(p_utf8_string, 0, temp_length);
+		// 유니코드를 UTF8코드로 변환한다.
+		WideCharToMultiByte(CP_UTF8, 0, unicode_str, -1, p_utf8_string, temp_length, NULL, NULL);
+
+		// UTF8 형식으로 변경된 문자열을 각 문자의 코드값별로 웹 URL에 사용되는 형식으로 변환한다.
+		for (int i = 0; i < temp_length - 1; i++) {
+			if (p_utf8_string[i] & 0x80) {
+				// 현재 코드가 한글인 경우..
+				// UTF8 코드로 표현된 한글은 3바이트로 표시된다. "한글"  ->  %ED%95%9C%EA%B8%80
+				for (int sub_i = 0; sub_i < 3; sub_i++) {
+					str.Format("%%%X", p_utf8_string[i] & 0x00FF);
+					parm_utf8_string += str;
+					i++;
+				}
+
+				i--;
+			}
+			else {
+				// 현재 코드가 영문인 경우, 변경없이 그대로 사용한다.
+				parm_utf8_string += p_utf8_string[i];
+			}
+		}
+
+		delete[] p_utf8_string;
+	}
+
+	// 유니코드 형식의 문자열을 저장하기 위해 생성했던 메모리를 삭제한다.
+	SysFreeString(unicode_str);
+}
 
 
 // 컨트롤을 조작했을 때 호출할 함수 만들기
@@ -229,7 +281,7 @@ int main()
 	void *p = CreateEdit(5, 10, 280, 24, 1001, 0);
 	// 소스를 가져올 샘플 웹페이지 URL을 에디트 컨트롤에 표시합니다!
 
-	SetCtrlName(p, "%EA%B8%B0%EC%83%9D%EC%B6%A9");
+	SetCtrlName(p, "기생충");
 	
 	CreateButton("검색", 290, 10, 40, 24, 1010);  // 버튼 생성!
 
