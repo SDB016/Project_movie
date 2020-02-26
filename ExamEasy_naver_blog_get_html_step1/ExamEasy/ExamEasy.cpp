@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "tipsware.h"
 #include<string.h>
-#include <atlstr.h>
+//#include <atlstr.h>
 
 // HTTP 프로토콜을 사용하는 함수들이 정의된 wininet.h 헤더 파일을 추가한다.
 #include <wininet.h>  
@@ -192,7 +192,7 @@ void SaveTextFile()  // 에디트 컨트롤에 적힌 문자열을 사용자가 
 	}
 }
 
-
+/*
 void AsciiToUTF8(CString parm_ascii_string, CString& parm_utf8_string)
 {
 	parm_utf8_string.Empty();
@@ -229,7 +229,6 @@ void AsciiToUTF8(CString parm_ascii_string, CString& parm_utf8_string)
 					parm_utf8_string += str;
 					i++;
 				}
-
 				i--;
 			}
 			else {
@@ -244,7 +243,7 @@ void AsciiToUTF8(CString parm_ascii_string, CString& parm_utf8_string)
 	// 유니코드 형식의 문자열을 저장하기 위해 생성했던 메모리를 삭제한다.
 	SysFreeString(unicode_str);
 }
-
+*/
 
 // 컨트롤을 조작했을 때 호출할 함수 만들기
 // 컨트롤의 아이디(a_ctrl_id), 컨트롤의 조작 상태(a_notify_code), 선택한 컨트롤 객체(ap_ctrl)
@@ -281,7 +280,7 @@ int main()
 	void *p = CreateEdit(5, 10, 280, 24, 1001, 0);
 	// 소스를 가져올 샘플 웹페이지 URL을 에디트 컨트롤에 표시합니다!
 
-	SetCtrlName(p, "기생충");
+	SetCtrlName(p, "parasite");
 	
 	CreateButton("검색", 290, 10, 40, 24, 1010);  // 버튼 생성!
 
